@@ -1,0 +1,28 @@
+name: chipseq
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  # workflow manager
+  - snakemake-minimal >=7.0
+
+  # QC
+  - fastqc >=0.11
+  - multiqc >=1.14
+  - trim-galore >=0.6
+
+  # Alignment
+  - bowtie2 >=2.4
+  - samtools >=1.16
+
+  # Peak calling
+  - macs2 >=2.2
+
+  # Downstream / visualisation
+  - deeptools >=3.5
+  - bedtools >=2.30
+
+  # Python helpers
+  - pandas >=1.5
+  - pyyaml >=6.0

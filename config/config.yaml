@@ -1,0 +1,55 @@
+# ============================================================
+# ChIP-seq Analysis Pipeline - Configuration File
+# ============================================================
+
+# Path to the sample sheet (TSV with columns: sample, control, fq1, fq2)
+samples: "config/samples.tsv"
+
+# Reference genome (FASTA) and pre-built Bowtie2 index prefix
+genome:
+  fasta: "resources/genome.fa"
+  bowtie2_index: "resources/bowtie2_index/genome"
+  blacklist: "resources/blacklist.bed"   # optional; set to "" to skip
+
+# Output directory
+outdir: "results"
+
+# ---------------------------------------------------------------
+# Tool parameters
+# ---------------------------------------------------------------
+
+trimming:
+  adapter_r1: "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"
+  adapter_r2: "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT"
+  quality:    20
+  min_length: 25
+
+alignment:
+  bowtie2_extra: "--very-sensitive -X 2000"  # extra bowtie2 flags
+  mapq_filter:   20                           # minimum MAPQ to retain
+
+peak_calling:
+  macs2_genome: "hs"       # hs = human, mm = mouse
+  macs2_qvalue: 0.05
+  macs2_extra:  "--nomodel --extsize 200"
+
+# ---------------------------------------------------------------
+# BigWig parameters
+# ---------------------------------------------------------------
+
+bigwig:
+  binsize:   10
+  normalise: "RPKM"
+
+# ---------------------------------------------------------------
+# Resource limits (threads per rule)
+# ---------------------------------------------------------------
+
+threads:
+  fastqc:  2
+  trim:    4
+  align:   8
+  sort:    4
+  dedup:   4
+  peaks:   1
+  bigwig:  4
