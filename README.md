@@ -1,6 +1,6 @@
 # ChIP_seq_analysis
 
-A reproducible, sample-sheet-driven ChIP-seq workflow for paired-end sequencing data. The pipeline is independent from the other projects in this GitHub account and is designed for transparent, repeatable analysis on a workstation or HPC system.
+A reproducible, sample-sheet-driven ChIP-seq workflow for paired-end sequencing data. 
 
 ## Workflow
 
