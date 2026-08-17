@@ -1,12 +1,12 @@
 # ChIP_seq_analysis
 
-A reproducible, sample-sheet-driven ChIP-seq workflow built from the standard tutorial pattern. The pipeline is intentionally independent from the existing Streamlit app in the parent repository.
+A reproducible, sample-sheet-driven ChIP-seq workflow for paired-end sequencing data. The pipeline is independent from the other projects in this GitHub account and is designed for transparent, repeatable analysis on a workstation or HPC system.
 
 ## Workflow
 
-`FASTQ -> FastQC/fastp -> Bowtie2 -> sorted/indexed BAM -> MACS3 peaks -> deepTools signal tracks -> R QC report`
+`FASTQ -> FastQC/fastp -> Bowtie2 local alignment -> unique/high-quality BAM -> MACS3 peaks -> replicate QC -> signal tracks`
 
-The template supports paired-end FASTQ files and one or more ChIP/Input pairs. It expects tools to be installed through Conda/Mamba.
+The workflow supports paired-end FASTQ files and one or more ChIP/Input pairs. Software is managed through Conda/Mamba.
 
 ## Quick start
 
@@ -15,8 +15,8 @@ cd chipseq_pipeline
 mamba env create -f environment.yml
 mamba activate chipseq
 
-# Edit config.tsv and samples.tsv first.
-# Set the reference index prefix in config.tsv.
+# Edit config.tsv and samples.tsv before running.
+# Set the reference index prefix and optional QC paths in config.tsv.
 ./run_chipseq.sh --config config.tsv --samples samples.tsv --threads 8
 ```
 
@@ -37,26 +37,32 @@ For a dry run:
 
 `type` must be `chip` or `input`. Each ChIP library must have a matching Input library with the same `condition` and `replicate`.
 
-## Important setup
+## Configuration
 
-1. Download the Bowtie2 index for the correct genome and set `BOWTIE2_INDEX` to its prefix, for example `/refs/hg38/bowtie2/hg38`.
+1. Set `BOWTIE2_INDEX` to the Bowtie2 index prefix, for example `/refs/hg38/bowtie2/hg38`.
 2. Set `GENOME_SIZE` for MACS3 (`hs`, `mm`, or an explicit effective genome size).
-3. Confirm that FASTQ paths, read layout, and peak model settings match the experiment.
-4. Run FastQC and inspect mapping/duplication metrics before interpreting peaks.
+3. `ALIGNMENT_MODE=local` enables soft clipping for adapter or low-quality sequence at read ends.
+4. `UNIQUE_ONLY=true` removes alignments carrying the Bowtie2 `XS` secondary-alignment tag.
+5. `REMOVE_DUPLICATES=true` removes marked PCR duplicates with `samtools markdup`.
+6. Set `BLACKLIST_BED` to a genome-version-matched blacklist BED file to enable blacklist filtering.
+7. Set `PHANTOMPEAK_SCRIPT` to a local `run_spp.R` path to enable strand cross-correlation metrics.
+8. Set `REGIONS_BED` to a BED file to generate TSS profile and heatmap figures.
 
 ## Outputs
 
-- `results/qc/`: FastQC, fastp reports, multiQC report, and R QC plots
-- `results/bam/`: sorted/indexed BAM files and flagstat summaries
-- `results/peaks/`: MACS3 narrowPeak files, summits, and peak tables
+- `results/qc/`: FastQC, fastp, MultiQC, alignment summaries, and optional cross-correlation output
+- `results/bam/`: intermediate SAM/BAM files, final filtered/indexed BAM files, and alignment metrics
+- `results/peaks/`: MACS3 narrowPeak, summit, and peak table files
+- `results/replicates/`: peak overlaps and optional IDR output for biological replicates
 - `results/bigwig/`: normalized CPM bigWig tracks
+- `results/visualization/`: ChIP/Input log2-ratio tracks and optional TSS plots
 - `results/logs/`: command logs for each stage
 
 ## Caveats
 
-This is a transparent teaching/research template, not a replacement for project-specific review. Peak calling parameters, blacklist filtering, biological replicate handling, and differential binding analysis should be adapted to the assay and organism. Do not interpret peaks until read quality, alignment, library complexity, and Input controls have been reviewed.
+Peak calling parameters, blacklist filtering, biological replicate handling, and differential binding analysis should be adapted to the assay and organism. Review read quality, alignment, library complexity, replicate concordance, and Input controls before interpreting peaks. All coordinate files must use the same genome assembly.
 
-## Suggested GitHub repository layout
+## Repository layout
 
 ```text
 chipseq_pipeline/
@@ -68,7 +74,10 @@ chipseq_pipeline/
 │   ├── 01_qc_trim.sh
 │   ├── 02_align_bam.sh
 │   ├── 03_call_peaks.sh
-│   └── 04_signal_tracks.sh
+│   ├── 04_signal_tracks.sh
+│   ├── 05_cross_correlation.sh
+│   ├── 06_replicate_consistency.sh
+│   └── 07_visualization.sh
 └── R/
     └── plot_qc.R
 ```

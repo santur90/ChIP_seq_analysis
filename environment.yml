@@ -8,8 +8,11 @@ dependencies:
   - multiqc
   - bowtie2
   - samtools
+  - sambamba
+  - bedtools
   - macs3
   - deeptools
+  - idr
   - r-base
   - r-ggplot2
   - r-readr

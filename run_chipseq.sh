@@ -25,9 +25,22 @@ threads=${cli_threads:-$(get_config THREADS)}
 index=$(get_config BOWTIE2_INDEX)
 genome_size=$(get_config GENOME_SIZE)
 effective_genome_size=$(get_config EFFECTIVE_GENOME_SIZE)
+alignment_mode=$(get_config ALIGNMENT_MODE)
+min_mapq=$(get_config MIN_MAPQ)
+remove_duplicates=$(get_config REMOVE_DUPLICATES)
+unique_only=$(get_config UNIQUE_ONLY)
+blacklist=$(get_config BLACKLIST_BED)
+phantompeak_script=$(get_config PHANTOMPEAK_SCRIPT)
+regions_bed=$(get_config REGIONS_BED)
+idr_threshold=$(get_config IDR_THRESHOLD)
+fragment_length=$(get_config FRAGMENT_LENGTH)
 outdir=$(get_config OUTDIR)
 
-for value in "$threads" "$index" "$genome_size" "$effective_genome_size" "$outdir"; do
+[[ "$blacklist" == "NONE" ]] && blacklist=""
+[[ "$phantompeak_script" == "NONE" ]] && phantompeak_script=""
+[[ "$regions_bed" == "NONE" ]] && regions_bed=""
+
+for value in "$threads" "$index" "$genome_size" "$effective_genome_size" "$alignment_mode" "$min_mapq" "$remove_duplicates" "$unique_only" "$idr_threshold" "$fragment_length" "$outdir"; do
     [[ -n "$value" ]] || { echo "Incomplete config: check $config" >&2; exit 1; }
 done
 [[ -f "$samples" ]] || { echo "Sample sheet not found: $samples" >&2; exit 1; }
@@ -46,9 +59,12 @@ bigwig_dir="$script_dir/$outdir/bigwig"
 mkdir -p "$script_dir/$outdir/logs"
 
 run bash "$script_dir/scripts/01_qc_trim.sh" "$samples" "$qc_dir" "$threads"
-run bash "$script_dir/scripts/02_align_bam.sh" "$samples" "$index" "$qc_dir/trimmed" "$bam_dir" "$threads"
-run bash "$script_dir/scripts/03_call_peaks.sh" "$samples" "$bam_dir" "$peak_dir" "$genome_size" "$threads"
-run bash "$script_dir/scripts/04_signal_tracks.sh" "$samples" "$bam_dir" "$bigwig_dir" "$effective_genome_size" "$threads"
+run bash "$script_dir/scripts/02_align_bam.sh" "$samples" "$index" "$qc_dir/trimmed" "$bam_dir" "$threads" "$alignment_mode" "$min_mapq" "$remove_duplicates" "$unique_only" "$blacklist"
+run bash "$script_dir/scripts/03_call_peaks.sh" "$samples" "$bam_dir" "$peak_dir" "$genome_size" "$threads" "$fragment_length"
+run bash "$script_dir/scripts/04_signal_tracks.sh" "$samples" "$bam_dir" "$bigwig_dir" "$effective_genome_size" "$threads" "$fragment_length"
+run bash "$script_dir/scripts/05_cross_correlation.sh" "$samples" "$bam_dir" "$qc_dir/cross_correlation" "$phantompeak_script"
+run bash "$script_dir/scripts/06_replicate_consistency.sh" "$samples" "$peak_dir" "$script_dir/$outdir/replicates" "$idr_threshold"
+run bash "$script_dir/scripts/07_visualization.sh" "$samples" "$bam_dir" "$bigwig_dir" "$script_dir/$outdir/visualization" "$regions_bed" "$effective_genome_size" "$threads" "$fragment_length"
 run multiqc "$script_dir/$outdir" --outdir "$qc_dir/multiqc"
 run Rscript "$script_dir/R/plot_qc.R" "$bam_dir" "$qc_dir/alignment_qc.png"
 
