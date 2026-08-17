@@ -1,0 +1,5 @@
+sample	control	fq1	fq2
+H3K4me3_rep1	Input_rep1	data/H3K4me3_rep1_R1.fastq.gz	data/H3K4me3_rep1_R2.fastq.gz
+H3K4me3_rep2	Input_rep2	data/H3K4me3_rep2_R1.fastq.gz	data/H3K4me3_rep2_R2.fastq.gz
+Input_rep1		data/Input_rep1_R1.fastq.gz	data/Input_rep1_R2.fastq.gz
+Input_rep2		data/Input_rep2_R1.fastq.gz	data/Input_rep2_R2.fastq.gz
