@@ -1,4 +1,4 @@
-# ChIP-seq analysis pipeline
+# ChIP_seq_analysis
 
 A reproducible, sample-sheet-driven ChIP-seq workflow built from the standard tutorial pattern. The pipeline is intentionally independent from the existing Streamlit app in the parent repository.
 
