@@ -1,0 +1,3 @@
+sample	condition	replicate	type	fastq_r1	fastq_r2
+chip_treat_rep1	treat	1	chip	data/chip_treat_rep1_R1.fastq.gz	data/chip_treat_rep1_R2.fastq.gz
+input_treat_rep1	treat	1	input	data/input_treat_rep1_R1.fastq.gz	data/input_treat_rep1_R2.fastq.gz

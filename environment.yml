@@ -1,0 +1,17 @@
+name: chipseq
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - fastqc
+  - fastp
+  - multiqc
+  - bowtie2
+  - samtools
+  - macs3
+  - deeptools
+  - r-base
+  - r-ggplot2
+  - r-readr
+  - r-dplyr
+  - r-tidyr

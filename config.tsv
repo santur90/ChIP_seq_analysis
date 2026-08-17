@@ -1,0 +1,7 @@
+# Project configuration: TAB-separated key/value pairs
+THREADS	8
+BOWTIE2_INDEX	/path/to/bowtie2/index/genome
+GENOME_SIZE	hs
+EFFECTIVE_GENOME_SIZE	2913022398
+READ_MODE	PE
+OUTDIR	results
