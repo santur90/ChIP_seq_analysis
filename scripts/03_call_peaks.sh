@@ -5,12 +5,11 @@ samples=$1
 bamdir=$2
 outdir=$3
 genome_size=$4
-threads=$5
 fragment_length=$6
 
 mkdir -p "$outdir"
 
-tail -n +2 "$samples" | while IFS=$'\t' read -r sample condition replicate type r1 r2; do
+tail -n +2 "$samples" | while IFS=$'\t' read -r sample condition replicate type _ _; do
     [[ -n "$sample" ]] || continue
     [[ "$type" == "chip" ]] || continue
 

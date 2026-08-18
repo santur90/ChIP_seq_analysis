@@ -11,7 +11,8 @@ threads=$7
 fragment_length=$8
 
 mkdir -p "$outdir/bamcompare" "$outdir/figures"
-while IFS=$'\t' read -r sample condition replicate type r1 r2; do
+# shellcheck disable=SC2094  # the sample sheet is only ever read, never written, in this loop
+while IFS=$'\t' read -r sample condition replicate type _ _; do
     [[ "$sample" == "sample" || -z "$sample" ]] && continue
     [[ "$type" == "chip" ]] || continue
     input_sample=$(awk -F '\t' -v c="$condition" -v r="$replicate" 'NR > 1 && $2 == c && $3 == r && $4 == "input" {print $1; exit}' "$samples")

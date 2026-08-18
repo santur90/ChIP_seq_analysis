@@ -14,7 +14,7 @@ blacklist=${10:-}
 
 mkdir -p "$outdir" "$outdir/intermediate" "$outdir/logs"
 
-tail -n +2 "$samples" | while IFS=$'\t' read -r sample condition replicate type r1 r2; do
+tail -n +2 "$samples" | while IFS=$'\t' read -r sample _ _ _ _ _; do
     [[ -n "$sample" ]] || continue
     read1="$trimmed/${sample}_R1.fastq.gz"
     read2="$trimmed/${sample}_R2.fastq.gz"

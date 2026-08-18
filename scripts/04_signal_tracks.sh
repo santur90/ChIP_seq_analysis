@@ -10,7 +10,7 @@ fragment_length=$6
 
 mkdir -p "$outdir"
 
-tail -n +2 "$samples" | while IFS=$'\t' read -r sample condition replicate type r1 r2; do
+tail -n +2 "$samples" | while IFS=$'\t' read -r sample _ _ _ _ _; do
     [[ -n "$sample" ]] || continue
     bam="$bamdir/${sample}.filtered.bam"
     [[ -f "$bam" ]] || { echo "BAM missing for $sample: $bam" >&2; exit 1; }
